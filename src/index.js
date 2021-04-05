@@ -2,7 +2,7 @@ import { ApolloServer, gql, PubSub } from "apollo-server";
 import db from "./db";
 import uuid from "uuid/v4";
 
-const pubsub = PubSub;
+//const pubsub = PubSub;
 
 const typeDefs = gql`
   type Query {
@@ -76,16 +76,16 @@ const resolvers = {
     users() {
       return db.users;
     },
-    user(_, args) {
+    user(_, args, { db }) {
       return db.users.find((user) => user.id === args.id); //finding the user by passing an ID
     },
-    post(_, args) {
+    post(_, args, { db }) {
       return db.posts.find((post) => post.id === args.id);
     },
   },
 
   Mutation: {
-    createUser(_, { data }) {
+    createUser(_, { data }, { db }) {
       const emailTaken = db.users.some((user) => user.email === data.email); //some returns a boolea
       if (emailTaken) throw new Error("email taken");
       const user = {
@@ -98,7 +98,7 @@ const resolvers = {
       return user;
     },
 
-    createPost(_, { data }) {
+    createPost(_, { data }, { db, pubsub }) {
       const post = {
         id: uuid(),
         title: data.title,
@@ -111,7 +111,7 @@ const resolvers = {
       return post;
     },
 
-    createComment(_, { data }) {
+    createComment(_, { data }, { db, pubsub }) {
       const author = db.users.find((user) => user.id === data.author);
       if (!author) {
         throw new Error(`No user found for ID ${data.author}`);
@@ -167,6 +167,10 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: {
+    db,
+    pubsub: new PubSub(),
+  },
 });
 
 server.listen().then(({ url }) => {
