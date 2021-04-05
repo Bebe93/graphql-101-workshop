@@ -10,8 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "apollo-server": "^2.22.2",
     "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0"
+    "babel-preset-env": "^1.7.0",
+    "graphql": "^15.5.0",
+    "graphql-subscriptions": "^1.2.1",
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
     "nodemon": "^1.17.5"
